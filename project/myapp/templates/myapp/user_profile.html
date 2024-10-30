@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.user_name }}'s Profile</title>
+</head>
+<body>
+    <h1>{{ user.user_name }}'s Profile</h1>
+    <p>Email: {{ user.academic_email }}</p>
+    <p>Academic Year: {{ user.get_academic_year_display }}</p>
+
+    <h2>Your Requests</h2>
+    <ul>
+        {% for request in requests %}
+            <li>
+                <strong>{{ request.request_description }}</strong> - {{ request.request_current_date }} (Status: {{ request.get_state_display }})
+            </li>
+        {% empty %}
+            <li>No requests found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

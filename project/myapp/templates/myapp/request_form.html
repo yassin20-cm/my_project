@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Request</title>
+</head>
+<body>
+    <h1>Create New Request</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="request_description">Description:</label><br>
+        <textarea id="request_description" name="request_description" required></textarea><br>
+        <button type="submit">Submit</button>
+    </form>
+    <nav>
+        <a href="{% url 'request_list' %}">Back to Requests</a>
+    </nav>
+</body>
+</html>

@@ -10,7 +10,7 @@
     <ul>
         {% for request in requests %}
             <li>
-                <a href="{% url 'request_detail' request.request_id %}">{{ request.request_description }}</a> - {{ request.state }}
+                <a href="{% url 'request_detail' request_id=request.request_id %}">{{ request.request_description }}</a> - {{ request.state }}
             </li>
         {% empty %}
             <li>No requests available.</li>

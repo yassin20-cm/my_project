@@ -2,30 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Detail</title>
 </head>
 <body>
     <h1>User Detail</h1>
-    <p><strong>User ID:</strong> {{ user.user_id }}</p>
-    <p><strong>User Name:</strong> {{ user.user_name }}</p>
-    <p><strong>Academic Email:</strong> {{ user.academic_email }}</p>
-    <p><strong>Academic Year:</strong> {{ user.get_academic_year_display }}</p>
-    
-    <h2>Requests Made by {{ user.user_name }}</h2>
-    <ul>
-        {% for request in user.request_set.all %}
-            <li>
-                <a href="{% url 'request_detail' request.request_id %}">{{ request.request_description }}</a> - {{ request.state }}
-            </li>
-        {% empty %}
-            <li>No requests made by this user.</li>
-        {% endfor %}
-    </ul>
-    
-    <nav>
-        <a href="{% url 'user_list' %}">Back to Users</a>
-        <a href="{% url 'home' %}">Home</a>
-    </nav>
+    <p>Name: {{ user.user_name }}</p>
+    <p>Email: {{ user.academic_email }}</p>
+    <p>Year: {{ user.academic_year }}</p>
+    <a href="{% url 'user_list' %}">Back to Users</a>
 </body>
 </html>

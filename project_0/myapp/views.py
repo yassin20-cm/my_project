@@ -1,6 +1,13 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Request
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import User, Request
+from .forms import RequestForm
+from .models import User, Request  
+from .models import User
+from .forms import UserForm # Add Proof here
+from .forms import RequestForm
+from django.shortcuts import render, redirect
+from django.contrib import messages 
+
 
 def home(request):
     return render(request, 'myapp/home.html')  # Create a home.html template
@@ -11,61 +18,66 @@ def request_list(request):
 
 def request_detail(request, request_id):
     request_item = get_object_or_404(Request, request_id=request_id)
-    return render(request, 'myapp/request_detail.html', {'request': request_item})  # Create a request_detail.html template
-
-from django.shortcuts import render, get_object_or_404
-from .models import User
-
-def request_detail(request, request_id):
-    request_detail = get_object_or_404(Request, request_id=request_id)
-    user = request_detail.user_id  # Get the associated user
+    user = request_item.user_id  # Get the associated user
     context = {
-        'request': request_detail,
+        'request': request_item,
         'user': user,
     }
     return render(request, 'myapp/request_detail.html', context)
 
+
 def request_form(request):
     if request.method == 'POST':
-        description = request.POST.get('request_description')
-        # Assuming you have user_id from session or passed in context
-        user_id = request.user.user_id  # Adjust based on your logic
-        Request.objects.create(user_id_id=user_id, request_description=description)
-        return redirect('request_list')
-    return render(request, 'myapp/request_form.html')
+        form = RequestForm(request.POST, request.FILES)
+        if form.is_valid():
+            request_instance = form.save(commit=False)
+            request_instance.user_id = request.user  # Associate the request with the logged-in user
+            request_instance.save()
+            messages.success(request, 'Request created successfully!')  # Success message
+            return redirect('user_profile')  # Redirect to user profile after saving
+    else:
+        form = RequestForm()
+    
+    return render(request, 'myapp/request_form.html', {'form': form})
+
 
 def user_form(request, user_id=None):
-    if user_id:
-        user = get_object_or_404(User, user_id=user_id)
-    else:
-        user = None
+    user = get_object_or_404(User, user_id=user_id) if user_id else None
 
     if request.method == 'POST':
-        user_name = request.POST.get('user_name')
-        academic_email = request.POST.get('academic_email')
-        academic_year = request.POST.get('academic_year')
+        form = UserForm(request.POST, request.FILES, instance=user)  # Use the form with the instance
+        if form.is_valid():
+            form.save()  # Save the changes to the user
+            return redirect('user_list')  # Redirect after saving
+    else:
+        form = UserForm(instance=user)  # Prepopulate the form with user data
 
-        if user:
-            user.user_name = user_name
-            user.academic_email = academic_email
-            user.academic_year = academic_year
-            user.save()
-        else:
-            User.objects.create(user_name=user_name, academic_email=academic_email, academic_year=academic_year)
+    return render(request, 'myapp/user_form.html', {'form': form, 'user': user})
 
-        return redirect('user_list')
-
-    return render(request, 'myapp/user_form.html', {'user': user})
 
 def user_list(request):
     users = User.objects.all()
     return render(request, 'myapp/user_list.html', {'users': users})
 
-def user_profile(request, user_id):
-    user = get_object_or_404(User, user_id=user_id)
-    requests = Request.objects.filter(user_id=user)  # Fetch requests for this user
-    context = {
+# myapp/views.py
+
+
+
+def user_profile(request):
+    user = request.user  # Get the logged-in user
+    requests = Request.objects.filter(user_id=user)  # Get the user's requests
+    if request.method == 'POST':
+        request_form = RequestForm(request.POST, request.FILES)  # Include request.FILES for file uploads
+        if request_form.is_valid():
+            request_instance = request_form.save(commit=False)
+            request_instance.user_id = user  # Associate the request with the user
+            request_instance.save()
+            return redirect('user_profile')  # Redirect to the profile page after saving
+    else:
+        request_form = RequestForm()
+
+    return render(request, 'myapp/user_profile.html', {
         'user': user,
         'requests': requests,
-    }
-    return render(request, 'myapp/user_profile.html', context)
+        'request_form': request_form  # Pass the form to the template
+    })

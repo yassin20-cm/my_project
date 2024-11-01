@@ -2,19 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Request</title>
+    <title>Create a New Request</title>
 </head>
 <body>
-    <h1>Create New Request</h1>
-    <form method="POST">
+    <h1>Create a New Request</h1>
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <label for="request_description">Description:</label><br>
-        <textarea id="request_description" name="request_description" required></textarea><br>
-        <button type="submit">Submit</button>
+        {{ form.non_field_errors }}
+
+        <div>
+            <label for="id_request_description">Description:</label>
+            {{ form.request_description }}
+            {{ form.request_description.errors }}
+        </div>
+
+        <div>
+            <label for="id_proofs">Upload Proof:</label>
+            {{ form.proofs }}  <!-- Allow multiple file uploads if needed -->
+            {{ form.proofs.errors }}
+        </div>
+
+        <button type="submit">Submit Request</button>
     </form>
+
     <nav>
-        <a href="{% url 'request_list' %}">Back to Requests</a>
+        <a href="{% url 'request_list' %}">Cancel</a>
+        <a href="{% url 'user_profile' %}">Back to Profile</a>  <!-- Link back to the user profile -->
     </nav>
 </body>
 </html>

@@ -15,8 +15,9 @@ class UserManager(BaseUserManager):
             academic_email=self.normalize_email(academic_email),
             academic_year=academic_year,
         )
-        user.set_password(password)  # Set hashed password
-        user.is_active = True  # Set user as active by default
+        if password:
+            user.set_password(password)
+        user.is_active = True
         user.save(using=self._db)
         return user
 
@@ -27,9 +28,8 @@ class UserManager(BaseUserManager):
             academic_year,
             password=password,
         )
-        user.is_admin = True
-        user.is_staff = True  # Make superuser a staff member
-        user.is_superuser = True  # Grant superuser privileges
+        user.is_staff = True
+        user.is_superuser = True
         user.save(using=self._db)
         return user
 
@@ -43,9 +43,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         (3, "3rd Year"),
         (4, "4th Year"),
     ])
-    is_active = models.BooleanField(default=True)  # User is active by default
-    is_staff = models.BooleanField(default=False)  # Can access admin site
-    is_superuser = models.BooleanField(default=False)  # Superuser permissions
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
     objects = UserManager()
 
@@ -69,6 +70,7 @@ class Request(models.Model):
         choices=RequestState.choices,
         default=RequestState.OPEN
     )
+    proofs = models.FileField(upload_to='proofs/', default='path/to/default/file.pdf')  # Keep this as a single FileField
 
     def __str__(self):
-        return f"{self.request_description} - {self.state}"
+        return f"{self.request_description} - {self.state} by {self.user_id.user_name}"

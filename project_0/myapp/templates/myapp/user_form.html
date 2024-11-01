@@ -2,31 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create/Update User</title>
+    <title>{% if user %}Edit User{% else %}Add User{% endif %}</title>
 </head>
 <body>
-    <h1>{% if user %}Update User{% else %}Create User{% endif %}</h1>
-    <form method="POST">
+    <h1>{% if user %}Edit User{% else %}Add User{% endif %}</h1>
+    
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <label for="user_name">User Name:</label><br>
-        <input type="text" id="user_name" name="user_name" value="{{ user.user_name|default:'' }}" required><br>
+        {{ form.non_field_errors }}
         
-        <label for="academic_email">Academic Email:</label><br>
-        <input type="email" id="academic_email" name="academic_email" value="{{ user.academic_email|default:'' }}" required><br>
-        
-        <label for="academic_year">Academic Year:</label><br>
-        <select id="academic_year" name="academic_year" required>
-            <option value="1" {% if user.academic_year == 1 %}selected{% endif %}>1st Year</option>
-            <option value="2" {% if user.academic_year == 2 %}selected{% endif %}>2nd Year</option>
-            <option value="3" {% if user.academic_year == 3 %}selected{% endif %}>3rd Year</option>
-            <option value="4" {% if user.academic_year == 4 %}selected{% endif %}>4th Year</option>
-        </select><br>
-        
+        <div>
+            <label for="id_user_name">User Name:</label>
+            {{ form.user_name }}
+            {{ form.user_name.errors }}
+        </div>
+        <div>
+            <label for="id_academic_email">Academic Email:</label>
+            {{ form.academic_email }}
+            {{ form.academic_email.errors }}
+        </div>
+        <div>
+            <label for="id_academic_year">Academic Year:</label>
+            {{ form.academic_year }}
+            {{ form.academic_year.errors }}
+        </div>
+        <div>
+            <label for="id_profile_picture">Profile Picture:</label>
+            {{ form.profile_picture }}
+            {{ form.profile_picture.errors }}
+        </div>
         <button type="submit">Submit</button>
     </form>
-    <nav>
-        <a href="{% url 'user_list' %}">Back to Users</a>
-    </nav>
+
+    <a href="{% url 'user_list' %}">Cancel</a>
+
+    {% if user %}
+        <h2>User Information</h2>
+        <p><strong>User Name:</strong> {{ user.user_name }}</p>
+        <p><strong>Academic Email:</strong> {{ user.academic_email }}</p>
+        <p><strong>Academic Year:</strong> {{ user.get_academic_year_display }}</p>
+        {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" style="max-width: 150px;">
+        {% endif %}
+    {% endif %}
 </body>
 </html>

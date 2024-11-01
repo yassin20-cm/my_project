@@ -1,24 +1,48 @@
+<!-- user_profile.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ user.user_name }}'s Profile</title>
+    <title>User Profile</title>
 </head>
 <body>
-    <h1>{{ user.user_name }}'s Profile</h1>
-    <p>Email: {{ user.academic_email }}</p>
-    <p>Academic Year: {{ user.get_academic_year_display }}</p>
+    <h1>User Profile</h1>
+    
+    <h2>User Information</h2>
+    <p><strong>User Name:</strong> {{ user.user_name }}</p>
+    <p><strong>Email:</strong> {{ user.academic_email }}</p>
+    <p><strong>Academic Year:</strong> {{ user.get_academic_year_display }}</p>
+    
+    {% if user.profile_picture %}
+        <p><strong>Profile Picture:</strong></p>
+        <img src="{{ user.profile_picture.url }}" alt="Profile Picture" style="width: 150px; height: auto;">
+    {% else %}
+        <p><strong>Profile Picture:</strong> No picture uploaded.</p>
+    {% endif %}
 
-    <h2>Your Requests</h2>
-    <ul>
+    <h3>Your Requests</h3>
+    {% if requests %}
+        <ul>
         {% for request in requests %}
             <li>
-                <strong>{{ request.request_description }}</strong> - {{ request.request_current_date }} (Status: {{ request.get_state_display }})
+                <strong>Description:</strong> {{ request.request_description }}<br>
+                <strong>State:</strong> {{ request.state }}<br>
+                <strong>Created On:</strong> {{ request.request_current_date }}<br>
+                <a href="{% url 'request_detail' request.request_id %}">View Details</a>
             </li>
-        {% empty %}
-            <li>No requests found.</li>
         {% endfor %}
-    </ul>
+        </ul>
+    {% else %}
+        <p>You have no requests.</p>
+    {% endif %}
+
+    <h3>User Actions</h3>
+    <a href="{% url 'request_form' %}">Create New Request</a>
+    <br><br>
+    <a href="{% url 'user_form' user.user_id %}">Edit Profile</a>
+    <br>
+    <a href="{% url 'home' %}">Home</a>
+
 </body>
 </html>
